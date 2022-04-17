@@ -10,11 +10,14 @@ const validateSchema = (schema) => async (req, res, next) => {
   }
 };
 
-// Validate if the id in url params is mongoId
-const validateIsMongoId = (req, res, next) => {
-  if (moongose.isValidObjectId(req.params.id)) return next();
+// Validate if the id in url params is valid (mongoId)
+const validateIsMongoId =
+  (idName = 'id') =>
+  (req, res, next) => {
+    console.log(req.params[idName]);
+    if (moongose.isValidObjectId(req.params[idName])) return next();
 
-  next(ApiError.badRequest('Invalid id'));
-};
+    next(ApiError.badRequest('Invalid id'));
+  };
 
 module.exports = { validateSchema, validateIsMongoId };

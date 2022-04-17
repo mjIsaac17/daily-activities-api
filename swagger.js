@@ -9,6 +9,16 @@ const swaggerOptions = {
       description:
         'This is an API application made with Express and documented with Swagger'
     },
+    components: {
+      securitySchemes: {
+        jwt: {
+          type: 'apiKey',
+          name: 'token',
+          in: 'header'
+        }
+      }
+    },
+    security: [{ jwt: [] }],
     servers: [
       {
         url: `http://localhost:${PORT}`

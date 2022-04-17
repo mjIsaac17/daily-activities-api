@@ -2,9 +2,18 @@ const ApiError = require('../error/apiError');
 const Activity = require('../models/Activity.model');
 
 class ActivityController {
+  async getActivities(req, res, next) {
+    try {
+      const activities = await Activity.find({ userId: req.user.id });
+      res.status(200).json({ activities });
+    } catch (error) {
+      next(ApiError.internalError(error));
+    }
+  }
+
   async addNewActivity(req, res, next) {
     try {
-      const activity = new Activity({ ...req.body });
+      const activity = new Activity({ ...req.body, userId: req.user.id });
       await activity.save();
 
       return res.status(201).json({ activity });

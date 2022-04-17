@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const activityController = require('../controllers/activity.controller');
+const { validateToken } = require('../middlewares/validateJWT');
 const { validateSchema } = require('../middlewares/validateRequest');
 const { addActivitySchema } = require('../schemas/activity.schema');
 
@@ -17,13 +18,9 @@ const { addActivitySchema } = require('../schemas/activity.schema');
  *           type: string
  *         description:
  *           type: string
- *         userId:
- *           type: string
- *           description: userId should be a mongo id
  *       example:
  *         title: Go to the gym
  *         description: Today I'm gonna train legs (quads and calves)
- *         userId: "62560168462f51132c6ccfa6"
  */
 
 /**
@@ -33,9 +30,31 @@ const { addActivitySchema } = require('../schemas/activity.schema');
  *   description: Activities management
  */
 
+router.use(validateToken);
+
 /**
  * @swagger
- * /api/activity/:
+ * /api/activities:
+ *   get:
+ *     summary: Returns activities for the current logged user
+ *     tags: [Activity]
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Activity'
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/', activityController.getActivities);
+
+/**
+ * @swagger
+ * /api/activities:
  *   post:
  *     summary: Add new activity
  *     tags: [Activity]

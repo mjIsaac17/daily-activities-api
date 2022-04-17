@@ -28,7 +28,7 @@ app.use(express.json());
 // Routes
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 app.use('/api/auth', require('./routes/auth.routes'));
-app.use('/api/activity', require('./routes/activity.routes'));
+app.use('/api/activities', require('./routes/activity.routes'));
 
 // 404 - Invalid route
 app.use('/', (req, res, next) => {
