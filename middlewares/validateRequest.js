@@ -14,9 +14,7 @@ const validateSchema = (schema) => async (req, res, next) => {
 const validateIsMongoId =
   (idName = 'id') =>
   (req, res, next) => {
-    console.log(req.params[idName]);
     if (moongose.isValidObjectId(req.params[idName])) return next();
-
     next(ApiError.badRequest('Invalid id'));
   };
 

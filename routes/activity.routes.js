@@ -1,8 +1,11 @@
 const router = require('express').Router();
 const activityController = require('../controllers/activity.controller');
 const { validateToken } = require('../middlewares/validateJWT');
-const { validateSchema } = require('../middlewares/validateRequest');
-const { addActivitySchema } = require('../schemas/activity.schema');
+const {
+  validateSchema,
+  validateIsMongoId
+} = require('../middlewares/validateRequest');
+const { addUpdateActivitySchema } = require('../schemas/activity.schema');
 
 /**
  * @swagger
@@ -12,7 +15,6 @@ const { addActivitySchema } = require('../schemas/activity.schema');
  *       type: object
  *       required:
  *         - title
- *         - userId
  *       properties:
  *         title:
  *           type: string
@@ -78,8 +80,64 @@ router.get('/', activityController.getActivities);
  */
 router.post(
   '/',
-  [validateSchema(addActivitySchema)],
+  [validateSchema(addUpdateActivitySchema)],
   activityController.addNewActivity
 );
+
+/**
+ * @swagger
+ * /api/activities/{id}:
+ *   put:
+ *     summary: Update an existing activity if you are the owner or admin
+ *     tags: [Activity]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The activity id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Activity'
+ *     responses:
+ *       200:
+ *         description: Activity updated successfully
+ *       400:
+ *         description: Invalid request
+ *       500:
+ *         description: Internal server error
+ */
+router.put(
+  '/:id',
+  [validateIsMongoId(), validateSchema(addUpdateActivitySchema)],
+  activityController.updateActivity
+);
+
+/**
+ * @swagger
+ * /api/activities/{id}:
+ *   delete:
+ *     summary: Delete an existing activity if you are the owner or admin
+ *     tags: [Activity]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The activity id
+ *     responses:
+ *       200:
+ *         description: Activity deleted successfully
+ *       400:
+ *         description: Invalid request
+ *       500:
+ *         description: Internal server error
+ */
+router.delete('/:id', validateIsMongoId(), activityController.deleteActivity);
 
 module.exports = router;
